@@ -1,66 +1,54 @@
 # ⚔️ justDuel
-
-A modern, high-performance, and network-ready dueling system, built for reliability and ease of use on any **Paper**, **Folia**, or **Spigot-based** server.
+A modern, high-performance, and network-ready dueling system, built for reliability and ease of use on any **Paper**, **Folia**, or **Spigot**-based server.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Author-kotori-lightgrey?style=for-the-badge" alt="Author" />
-  <img src="https://img.shields.io/badge/API-1.21+-brightgreen?style=for-the-badge" alt="API Version" />
-  <img src="https://img.shields.io/badge/Platform-Paper_|_Folia-blue?style=for-the-badge" alt="Platform" />
+<img src="https://img.shields.io/badge/Author-kotori-lightgrey?style=for-the-badge" alt="Author" />
+<img src="https://img.shields.io/badge/API-1.21+-brightgreen?style=for-the-badge" alt="API Version" />
+<img src="https://img.shields.io/badge/Platform-Paper_|_Folia-blue?style=for-the-badge" alt="Platform" />
 </p>
 
 ---
 
 ## ✨ Features
-
-- ⚔️ **Dual Duel Modes** — Choose between **KITS** mode for pre-configured loadouts or **SMP** mode to let players fight with their own inventory.
-- 🌐 **Full Cross-Server Support** — Instantly challenge and spectate players across your entire BungeeCord or Velocity network with seamless Redis integration.
-- 🛡️ **Advanced Kit System** — Allow players to create, edit, save, and even **publish** their custom kits for others to use and rate in the public Kit Browser.
-- 🖥️ **Intuitive GUI Interface** — Manage everything through clean, modern, and user-friendly menus, from challenging players to editing kits.
-- ⚙️ **Dynamic Arena Management** — Create an unlimited number of duel arenas with simple in-game commands. The plugin handles arena allocation and regeneration automatically.
-- ♻️ **Intelligent Arena Regeneration** — After each duel, arenas are instantly and efficiently restored to their original state, resetting only the blocks that were changed.
-- 🚀 **High Performance** — Built with an asynchronous, non-blocking core to ensure zero lag, with native support for Folia's advanced scheduling.
-- 📊 **Detailed Stats & Leaderboards** — Track wins, losses, K/D ratios, and W/L ratios. View personal stats or compete on server-wide leaderboards.
-- 👀 **Live Spectator Mode** — Join and watch ongoing duels in real-time, even if they are happening on another server in your network.
-- 🎨 **Highly Customizable** — Edit all messages, GUI layouts, sounds, and plugin behaviors to perfectly match your server's theme using MiniMessage format.
-- 💾 **Flexible Storage** — Supports **SQLite** for single-server setups and **MySQL/MariaDB** for network-wide data synchronization.
-- 🧩 **PlaceholderAPI & Vault Support** — Display player stats anywhere and reward duel winners with in-game currency.
+- ⚔️ **Dual Duel Modes** — Choose between **KITS** mode for pre-configured loadouts or **SMP** mode to let players fight with their own inventory.  
+- 🌐 **Full Cross-Server Support** — Instantly challenge and spectate players across your entire **BungeeCord** or **Velocity** network with seamless Redis integration.  
+- 🛡️ **Advanced Kit System** — Players can create, edit, save, and publish their custom kits for others to use and rate in the public Kit Browser.  
+- 🖥️ **Intuitive GUI Interface** — Manage everything through clean, modern, and user-friendly menus.  
+- 🤖 **1v1 Queue NPC** — Spawn an interactive NPC for random duel matchmaking.  
+- ⚙️ **Interactive Arena Setup** — Easily create unlimited duel arenas with a simple in-game setup tool.  
+- ♻️ **Intelligent Arena Regeneration** — Arenas are automatically and efficiently reset after every duel.  
+- 🚀 **High Performance** — Built with an asynchronous, non-blocking core and optimized for **Folia**.  
+- 📊 **Detailed Stats & Leaderboards** — Track wins, losses, K/D ratio, W/L ratio, and server-wide leaderboards.  
+- 👀 **Live Spectator Mode** — Watch ongoing duels in real time, even across servers.  
+- 🎨 **Highly Customizable** — Full control over messages, GUIs, sounds, and behaviors with **MiniMessage** format.  
+- 💾 **Flexible Storage** — Supports **SQLite** (single-server) and **MySQL/MariaDB** (network-wide).  
+- 🧩 **PlaceholderAPI & Vault Support** — Display duel stats anywhere and reward winners with currency.  
 
 ---
 
 ## 📦 Installation
-
-1.  Download the latest `justDuel.jar`.
-2.  Stop your Minecraft server.
-3.  Place the file in your `/plugins/` directory.
-4.  *(Optional)* Install **PlaceholderAPI** for placeholder support.
-5.  Start the server to generate the configuration files.
-6.  Enter your **license key** and configure your **database** in `config.yml`.
-7.  If you run a network, configure your **Redis** settings in `config.yml`.
-8.  Customize `config.yml`, `messages.yml`, and `gui.yml` to your liking.
-9.  Reload the plugin with `/dueladmin reload`.
+1. Download the latest `justDuel.jar`.  
+2. Stop your Minecraft server.  
+3. Place the file in your `/plugins/` directory.  
+4. Install the required dependency: **Vault**.  
+5. (Optional) Install **PlaceholderAPI** for placeholder support.  
+6. Start the server to generate configuration files.  
+7. Enter your license key and configure your database in `config.yml`.  
+8. If using a network, configure your **Redis** settings in `config.yml`.  
+9. Customize `config.yml`, `messages.yml`, and `gui.yml`.  
+10. Reload the plugin with `/da reload`.  
 
 ---
 
-## ⚙️ Configuration
-
-### `config.yml` (Explained for Customers)
-
+## ⚙️ Configuration (config.yml explained)
 ```yaml
-# Enter the license key you received upon purchase.
+# License key received upon purchase.
 license-key: 'ENTER_YOUR_LICENSE_KEY_HERE'
 
-# A unique name for this server. Crucial for cross-server features to work correctly.
+# Unique server identifier for cross-server features.
 server-name: 'server1'
 
-# Customize the sounds played when interacting with menus.
-# Format: 'SOUND_NAME:volume:pitch'
-gui-sounds:
-  open: "BLOCK_CHEST_OPEN:1.0:1.0"
-  click: "UI_BUTTON_CLICK:1.0:1.2"
-  back: "BLOCK_WOODEN_DOOR_CLOSE:1.0:1.0"
-  error: "BLOCK_ANVIL_LAND:1.0:1.5"
-
-# Required for communication between multiple servers (cross-server duels, spectating, etc.).
+# Redis configuration (required for cross-server duels/spectating).
 redis:
   enabled: false
   host: '127.0.0.1'
@@ -68,24 +56,16 @@ redis:
   password: ''
   ssl: false
 
-# duel-mode: 'KITS' (players select from pre-defined or custom kits) or 'SMP' (players use their current inventory).
+# Duel mode: 'KITS' or 'SMP'
 duel-mode: KITS
 countdown-seconds: 5
-request-timeout-seconds: 60 # Time a player has to accept a duel request.
-request-cooldown-seconds: 10 # Cooldown before sending another request to the same player.
+request-timeout-seconds: 60
+request-cooldown-seconds: 10
+wait-for-opponent-seconds: 15
 
-# Allows sending duel requests to players who are not inside a defined hub zone.
-allow-duels-outside-hub: true
-
-player-selector:
-  # If true, the player selector GUI will show all players across the network (requires Redis).
-  show-all-players: false
-
-# Enables or disables the public kit browser and all related features.
 kit-browser:
   enabled: true
 
-# Define how many kits players can publish based on their permissions.
 kit-publishing:
   limits:
     - permission: 'justduel.publish.default'
@@ -95,15 +75,13 @@ kit-publishing:
     - permission: 'justduel.publish.admin'
       limit: 100
 
-# Requires Vault and an economy plugin (e.g., EssentialsX).
 duel-rewards:
   enabled: false
   win-amount: 100.0
 
-# Can be 'sqlite' or 'mysql'.
 database:
   type: 'sqlite'
-  # ... database settings
+  # ... other database settings
 ```
 
 ---
@@ -111,48 +89,51 @@ database:
 ## ⌨️ Commands & Permissions
 
 ### 🔧 Commands
-
-| Command | Description | Permission (justduel.command.*) |
-|---------|-------------|---------------------------------|
-| /duel | Opens the main duel menu. | justduel.use |
-| /duel <player> | Challenges a player to a duel. | justduel.use |
-| /duel accept/deny | Responds to the last duel request. | justduel.use |
-| /duel forfeit | Forfeits your current duel. | justduel.use |
-| /duel leavequeue | Leaves the duel queue. | justduel.use |
-| /duel stats [player] | Shows duel statistics. | justduel.command.stats |
-| /duel top [category] | Displays the leaderboards. | justduel.command.top |
-| /duel spectate [player] | Spectates a duel or opens the menu. | justduel.spectate |
-| /duel leave | Stops spectating a duel. | justduel.spectate |
-| /dueladmin createarena <name> | Creates a new arena. | justduel.admin |
-| /dueladmin setarenaspawn <arena> <1/2> | Sets a spawn point for an arena. | justduel.admin |
-| /dueladmin setarenazone <arena> | Defines the boundaries for an arena. | justduel.admin |
-| /dueladmin savearena <arena> | Saves and enables a configured arena. | justduel.admin |
-| /dueladmin reload | Reloads all configuration files. | justduel.admin.reload |
+| Command | Description | Permission |
+|---------|-------------|------------|
+| `/duel` | Opens the main duel menu. | `justduel.use` |
+| `/duel <player>` | Challenges a player to a duel. | `justduel.use` |
+| `/duel accept/deny` | Responds to the last duel request. | `justduel.use` |
+| `/duel forfeit` | Forfeits your current duel. | `justduel.use` |
+| `/duel leavequeue` | Leaves the duel queue. | `justduel.use` |
+| `/duel savekit` | Saves your current kit. | `justduel.use` |
+| `/duel stats [player]` | Shows duel statistics. | `justduel.use` |
+| `/duel top [category]` | Displays leaderboards. | `justduel.use` |
+| `/duel spectate [player]` | Spectates a duel / opens spectate menu. | `justduel.spectate` |
+| `/duel leave` | Stops spectating a duel. | `justduel.spectate` |
+| `/duel settings` | Opens your personal settings. | `justduel.use` |
+| `/da arena setup <name>` | Interactive arena setup. | `justduel.admin` |
+| `/da arena delete <name>` | Deletes an arena. | `justduel.admin` |
+| `/da arena exit` | Cancels arena setup. | `justduel.admin` |
+| `/da setspawn` | Sets global spawn. | `justduel.admin` |
+| `/da spawn 1v1` | Spawns the 1v1 Queue NPC. | `justduel.admin` |
+| `/da delete 1v1` | Deletes the 1v1 Queue NPC. | `justduel.admin` |
+| `/da zones` | Shows arena/hub statuses. | `justduel.admin` |
+| `/da syncconfigs` | Syncs `arenas.yml` to DB. | `justduel.admin` |
+| `/da reload` | Reloads all configs. | `justduel.admin.reload` |
 
 ### 🔐 Permissions
-
 | Permission | Description | Default |
 |------------|-------------|---------|
-| justduel.admin | Grants access to all admin commands. | op |
-| justduel.use | Allows players to use basic duel commands. | true |
-| justduel.spectate | Allows players to spectate ongoing duels. | true |
-| justduel.bypass.cooldown | Bypasses the duel request cooldown. | op |
-| justduel.publish.<limit> | Permission nodes for kit publishing limits. | op |
-| justduel.icon.<group> | Allows using specific groups of kit icons. | varies |
+| `justduel.admin` | Access to all admin commands. | op |
+| `justduel.use` | Allows duel commands. | true |
+| `justduel.spectate` | Allows spectating duels. | true |
+| `justduel.bypass.cooldown` | Bypass duel cooldown. | op |
+| `justduel.publish.<limit>` | Kit publishing limits. | op |
+| `justduel.icon.<group>` | Allows specific kit icons. | varies |
 
 ---
 
-## 🧩 PlaceholderAPI
-
+## 🧩 PlaceholderAPI Placeholders
 | Placeholder | Description |
 |-------------|-------------|
-| %justduel_wins% | Shows the player's total duel wins. |
-| %justduel_losses% | Shows the player's total duel losses. |
-| %justduel_wlr% | Shows the player's win-loss ratio. |
-| %justduel_kills% | Shows the player's total duel kills. |
-| %justduel_deaths% | Shows the player's total duel deaths. |
-| %justduel_kdr% | Shows the player's kill-death ratio. |
-| %justduel_status% | Shows the player's current status (e.g., In Duel). |
+| `%justduel_wins%` | Player's total duel wins. |
+| `%justduel_losses%` | Player's total duel losses. |
+| `%justduel_wlr%` | Win-loss ratio. |
+| `%justduel_kills%` | Total duel kills. |
+| `%justduel_deaths%` | Total duel deaths. |
+| `%justduel_kdr%` | Kill-death ratio. |
+| `%justduel_status%` | Current status (e.g., In Duel). |
 
 ---
 
