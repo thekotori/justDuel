@@ -1,7 +1,7 @@
 # JustDuel
 
 <p align="center">
-<img src="https://i.imgur.com/txxx2" alt="JustDuel Logo" width="1000"/>
+<img src="https://i.imgur.com/xiY0MQ7.png" alt="JustDuel Logo" width="1000"/>
 </p>
 
 <p align="center">
