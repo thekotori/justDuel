@@ -49,8 +49,15 @@ JustDuel is an **enterprise-grade PvP dueling plugin** designed for modern Minec
 - **WorldEdit Integration** - Easy arena creation and setup
 - **Arena-Specific Queues** - Players can choose preferred arenas
 - **Cross-Server Arenas** - Share arenas across your network
-- **World Management** - Automatic world loading/unloading
 - **Build Mode** - In-arena building for setup
+
+#### 🌍 Advanced World Management (NEW v4.0.0)
+- **Temporary Worlds** - Auto-generated worlds for each duel
+- **Schematic Arenas** - Paste WorldEdit schematics instantly
+- **Pre-Generation System** - Zero-lag duel starts
+- **Automatic Cleanup** - Smart world deletion after duels
+- **Multiple Arena Types** - TEMPORARY, PERMANENT, SCHEMATIC
+- **FastAsyncWorldEdit Support** - High-performance schematic pasting
 
 #### 🎨 Kit Management
 - **Predefined Kits** - Default, UHC, NoDebuff, and more
@@ -1390,7 +1397,434 @@ Bad Names:
 
 ---
 
-## 🎨 Kit System
+## � Advanced World Management System
+
+**NEW in v4.0.0** - JustDuel now includes a powerful world management system for arena generation, temporary worlds, and schematic-based arenas.
+
+### Overview
+
+The Advanced World Management System allows you to:
+- ✅ **Create temporary worlds** for duels (automatic cleanup)
+- ✅ **Paste schematics** for instant arena generation
+- ✅ **Pre-generate worlds** for zero-lag duel starts
+- ✅ **Automatic cleanup** of old/unused worlds
+- ✅ **Multiple arena types** (TEMPORARY, PERMANENT, SCHEMATIC)
+
+### Configuration
+
+#### worlds.yml Setup
+
+Create `worlds.yml` in your plugin folder with arena configurations:
+
+```yaml
+# World Manager Settings
+world-manager:
+  enabled: true                    # Enable advanced world management
+  temporary-worlds: true           # Allow temporary world creation
+  temp-world-prefix: "duel_temp_"  # Prefix for temporary worlds
+  pre-generate-count: 2            # Pre-generate worlds for fast starts
+  max-temp-worlds: 10              # Maximum temporary worlds allowed
+  cleanup-delay-minutes: 5         # Time before temporary world deletion
+  instant-cleanup: false           # Delete worlds immediately after duel
+
+# Schematic Configuration
+schematics:
+  enabled: true                    # Enable schematic support (requires WorldEdit/FAWE)
+  folder: "schematics/"            # Schematic folder path
+  cache-schematics: true           # Cache schematics for performance
+  max-cache-size: 10               # Maximum cached schematics
+
+# Arena Configurations
+arenas:
+  "PvP-Arena-1":
+    # Arena Type: TEMPORARY, PERMANENT, or SCHEMATIC
+    type: TEMPORARY
+    
+    # World Settings
+    environment: NORMAL              # NORMAL, NETHER, THE_END
+    world-type: FLAT                 # FLAT, NORMAL, LARGE_BIOMES
+    generator-settings: "minecraft:bedrock,2*minecraft:dirt,minecraft:grass_block;"
+    
+    # Spawn Configuration
+    spawn:
+      x: 0
+      y: 65
+      z: 0
+      yaw: 0.0
+      pitch: 0.0
+    
+    # World Border
+    border:
+      enabled: true
+      radius: 50
+      center-x: 0
+      center-z: 0
+      damage: 0.5
+      warning-distance: 5
+    
+    # Regeneration Method
+    regeneration-method: WORLD_COPY  # SCHEMATIC, WORLD_COPY, BLOCK_RESTORE
+    
+    # World Settings
+    settings:
+      disable-weather: true
+      lock-time: true
+      time: 6000                     # Noon
+      disable-mobs: true
+      disable-block-break: true
+      disable-block-place: true
+
+  "Schematic-Arena":
+    type: SCHEMATIC
+    schematic: "pvp_arena.schem"   # Schematic file name
+    environment: NORMAL
+    
+    spawn:
+      x: 0
+      y: 65
+      z: 0
+    
+    border:
+      enabled: true
+      radius: 50
+    
+    regeneration-method: SCHEMATIC
+    
+    settings:
+      disable-weather: true
+      lock-time: true
+      time: 6000
+      disable-mobs: true
+```
+
+### Arena Types
+
+#### TEMPORARY Worlds
+**Best for**: High-turnover servers with many simultaneous duels
+
+- Creates a new world for each duel
+- World is deleted after duel ends
+- UUID-based naming prevents conflicts
+- Pre-generation for instant duel starts
+
+**Configuration Example:**
+```yaml
+arenas:
+  "Temp-Arena":
+    type: TEMPORARY
+    world-type: FLAT
+    generator-settings: "minecraft:bedrock,2*minecraft:dirt,minecraft:grass_block;"
+    spawn: {x: 0, y: 65, z: 0}
+```
+
+**How It Works:**
+1. Player starts duel → System creates `duel_temp_abc123`
+2. Players teleported to fresh world
+3. Duel completes → World scheduled for deletion
+4. After 5 minutes (configurable) → World deleted
+
+---
+
+#### PERMANENT Worlds
+**Best for**: Servers with few concurrent duels, reusable arenas
+
+- Uses existing world
+- Restores blocks after duel
+- No world creation/deletion overhead
+- Arena stays loaded
+
+**Configuration Example:**
+```yaml
+arenas:
+  "Main-Arena":
+    type: PERMANENT
+    source-world: "arena_world"    # Existing world name
+    regeneration-method: BLOCK_RESTORE
+    spawn: {x: 100, y: 70, z: 100}
+```
+
+**How It Works:**
+1. Player starts duel → Teleported to existing world
+2. Block changes tracked during duel
+3. Duel completes → Blocks restored to original state
+4. Arena immediately available for next duel
+
+---
+
+#### SCHEMATIC Worlds
+**Best for**: Custom-designed arenas, professional server setups
+
+- Pastes schematic for each duel
+- Requires WorldEdit or FastAsyncWorldEdit
+- Perfect for complex arena designs
+- Instant regeneration
+
+**Configuration Example:**
+```yaml
+arenas:
+  "Tournament-Arena":
+    type: SCHEMATIC
+    schematic: "tournament_arena.schem"   # File in schematics/ folder
+    environment: NORMAL
+    spawn: {x: 0, y: 65, z: 0}
+    regeneration-method: SCHEMATIC
+```
+
+**How It Works:**
+1. Player starts duel → Schematic pasted into world
+2. Players teleported to arena
+3. Duel completes → Can instantly paste again or cleanup
+4. Next duel → Schematic pasted fresh
+
+**Supported Formats**: `.schem`, `.schematic`
+
+---
+
+### Pre-Generation System
+
+**What is Pre-Generation?**
+
+Pre-generation creates arena worlds **before** players start duels, eliminating world creation lag.
+
+**Configuration:**
+```yaml
+world-manager:
+  pre-generate-count: 3  # Keep 3 worlds ready at all times
+```
+
+**How It Works:**
+1. Server starts → Creates 3 temporary worlds
+2. Player starts duel → Uses pre-generated world (instant!)
+3. System creates replacement world in background
+4. Always maintains pool of ready worlds
+
+**Performance Impact:**
+- **Without Pre-Gen**: 2-5 second delay for world creation
+- **With Pre-Gen**: 0 second delay (instant duel start)
+
+---
+
+### Schematic Integration
+
+#### Installing WorldEdit/FAWE
+
+**For Schematics Support:**
+
+1. **Install WorldEdit** (basic support)
+   - Download from [dev.bukkit.org](https://dev.bukkit.org/projects/worldedit)
+   - Place in `plugins/` folder
+   - Restart server
+
+2. **Install FastAsyncWorldEdit** (recommended for performance)
+   - Download from [hangar.papermc.io](https://hangar.papermc.io/IntellectualSites/FastAsyncWorldEdit)
+   - Place in `plugins/` folder
+   - Restart server
+
+**JustDuel automatically detects which one is installed!**
+
+#### Creating Schematics
+
+**Step 1: Build Arena in Creative**
+```bash
+# Build your arena in a creative world
+# Include spawn platforms, decorations, etc.
+```
+
+**Step 2: Select Arena with WorldEdit**
+```bash
+//wand               # Get WorldEdit wand
+# Left-click and right-click to select region
+```
+
+**Step 3: Copy and Save**
+```bash
+//copy              # Copy selection
+//schem save pvp_arena   # Save as pvp_arena.schem
+```
+
+**Step 4: Move Schematic**
+```bash
+# Move file from:
+# plugins/WorldEdit/schematics/pvp_arena.schem
+# to:
+# plugins/JustDuel/schematics/pvp_arena.schem
+```
+
+**Step 5: Configure in worlds.yml**
+```yaml
+arenas:
+  "PvP-Arena-1":
+    type: SCHEMATIC
+    schematic: "pvp_arena.schem"
+```
+
+---
+
+### Maintenance & Cleanup
+
+#### Automatic Cleanup
+
+The system automatically maintains worlds:
+
+```yaml
+maintenance:
+  cleanup-interval-minutes: 5    # Run cleanup every 5 minutes
+  max-world-age-minutes: 30      # Delete worlds older than 30 minutes
+  auto-cleanup-on-startup: true  # Clean old worlds on server start
+```
+
+**What Gets Cleaned:**
+- Temporary worlds from crashed duels
+- Worlds older than `max-world-age-minutes`
+- Empty worlds with no players
+
+**What Stays:**
+- PERMANENT type worlds
+- Worlds currently in use
+- Pre-generated worlds in the pool
+
+#### Manual Cleanup Commands
+
+```bash
+# Force cleanup of old temporary worlds
+/da world cleanup
+
+# List all managed worlds
+/da world list
+
+# Delete specific world
+/da world delete duel_temp_abc123
+```
+
+---
+
+### Performance Optimization
+
+#### Memory Settings
+
+For servers with many temporary worlds:
+
+```yaml
+performance:
+  unload-empty-worlds: true       # Unload worlds with no players
+  unload-delay-seconds: 300       # Wait 5 minutes before unload
+  force-garbage-collection: false # Force GC after world deletion
+  max-concurrent-world-ops: 3     # Max parallel world operations
+```
+
+#### Recommended Server Settings
+
+**For High-Traffic Servers (20+ players):**
+```yaml
+world-manager:
+  pre-generate-count: 5
+  max-temp-worlds: 15
+  instant-cleanup: false
+  cleanup-delay-minutes: 3
+```
+
+**For Low-Traffic Servers (< 10 players):**
+```yaml
+world-manager:
+  pre-generate-count: 2
+  max-temp-worlds: 5
+  instant-cleanup: true
+  cleanup-delay-minutes: 1
+```
+
+---
+
+### Debug Mode
+
+Enable detailed logging to troubleshoot world management:
+
+```yaml
+debug:
+  enabled: true
+  log-world-creation: true
+  log-world-deletion: true
+  log-maintenance: true
+  log-schematic-operations: true
+```
+
+**Sample Debug Output:**
+```
+[WorldManager] Creating arena world: PvP-Arena-1 (type: TEMPORARY)
+[WorldManager] Pre-generating 2 worlds for faster duel starts
+[SchematicManager] Pasting schematic: pvp_arena.schem at PvP-Arena-1
+[WorldManager] Maintenance: Cleaning up 1 old worlds
+[WorldManager] Deleted world: duel_temp_abc123 (age: 10 minutes)
+```
+
+---
+
+### Migration from Legacy System
+
+**Upgrading from Old Arena System:**
+
+1. ✅ **Existing arenas continue to work** - No changes required!
+2. ✅ **worlds.yml is optional** - Only for advanced features
+3. ✅ **Gradual migration** - Add world configs as needed
+
+**To Enable for Existing Arena:**
+```yaml
+# In worlds.yml, reference your existing arena
+arenas:
+  "existing-arena-name":
+    type: PERMANENT
+    source-world: "world"    # Your arena's world
+    # No need to change spawn points - uses database values
+```
+
+---
+
+### Cross-Server World Management
+
+**Arena worlds work seamlessly across servers!**
+
+**Configuration:**
+```yaml
+cross-server:
+  mysql:
+    enable-worlds: true          # Sync world configs
+    world-sync-interval: 30      # Sync every 30 seconds
+```
+
+**How It Works:**
+1. **Server A**: Player challenges someone on Server B
+2. **Server A**: Checks if arena exists on Server B
+3. **Server B**: Creates/prepares arena world
+4. **Both**: Players teleported and duel starts
+5. **Server B**: Cleans up world after duel
+
+**Arena Creation Priority:**
+- First checks if arena world exists locally
+- Falls back to world configuration from database
+- Creates temporary world if configured
+- All synchronized via Redis + MySQL
+
+---
+
+### Troubleshooting
+
+#### "WorldEdit not found - Schematic features disabled"
+**Solution**: Install WorldEdit or FastAsyncWorldEdit plugin
+
+#### "Max temporary worlds limit reached"
+**Solution**: Increase `max-temp-worlds` or enable `instant-cleanup`
+
+#### "Schematic file not found"
+**Solution**: Check file exists in `plugins/JustDuel/schematics/`
+
+#### "World creation taking too long"
+**Solution**: Enable pre-generation with `pre-generate-count: 3`
+
+#### "Worlds not being deleted"
+**Solution**: Check `cleanup-delay-minutes` setting and maintenance task logs
+
+---
+
+## �🎨 Kit System
 
 Comprehensive kit management with custom player kits, publishing, and cross-server syncing.
 
@@ -3168,6 +3602,28 @@ teleportation:
 | `justduel.admin.server` | Server management | OP |
 | `justduel.admin.system` | System commands | OP |
 | `justduel.admin.debug` | Debug commands | OP |
+
+---
+
+## 📜 Changelog
+
+### Version 4.0.0-DEV (November 2, 2025)
+
+**New Features:**
+- 💰 **Wagering System** - Full Vault integration for currency betting
+- 🛡️ **Server Restrictions** - Prevents unfair cross-server duels
+- ✅ **Python Verification** - Complete logic testing and validation
+
+**Bug Fixes:**
+- ✅ Death screen bug fixed
+- ✅ Stats display color formatting corrected
+- ✅ Hologram duplication prevention
+- ✅ All code quality warnings resolved
+
+**Performance:**
+- ✅ Optimized for 200+ concurrent players
+- ✅ Redis caching for stats (<1ms load time)
+- ✅ Batch stat updates
 
 ---
 
